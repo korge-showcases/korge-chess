@@ -12,6 +12,8 @@ enum class ChessPieceKind(val key: Char, val index: Int) {
     KING('N', 5);
     companion object {
         val VALUES = values()
+        val UPPER_KEYS = values().associateBy { it.key.uppercaseChar() }
+        val LOWER_KEYS = values().associateBy { it.key.lowercaseChar() }
     }
 }
 
@@ -62,9 +64,26 @@ sealed interface ChessCell {
 }
 
 inline class ChessBoard(
-    val array: IntArray2
+    @PublishedApi internal val array: IntArray2
 ) {
+    val width: Int get() = array.width
+    val height: Int get() = array.height
+    operator fun get(x: Int, y: Int): ChessCell = ChessCell.fromValue(array[x, y])
+    operator fun get(p: PointInt): ChessCell = this[p.x, p.y]
+    //operator fun set(p: PointInt, value: ChessCell) { this[p.x, p.y] = value }
+
     companion object {
+        fun createFromString(str: String): ChessBoard {
+            return ChessBoard(IntArray2(str, '.') { char, x, y ->
+                val upperKind = ChessPieceKind.UPPER_KEYS[char]
+                val lowerKind = ChessPieceKind.LOWER_KEYS[char]
+                when {
+                    upperKind != null -> ChessCell.Piece(upperKind, ChessPlayer.BLACK)
+                    lowerKind != null -> ChessCell.Piece(lowerKind, ChessPlayer.WHITE)
+                    else -> ChessCell.EMPTY
+                }.value
+            })
+        }
         fun createEmpty(): ChessBoard = ChessBoard(IntArray2(8, 8) { 0 })
         fun createDefault(): ChessBoard {
             val array = createEmpty().array.clone()
@@ -105,16 +124,11 @@ inline class ChessBoard(
         return ChessBoard(newArray)
     }
 
-    operator fun get(x: Int, y: Int): ChessCell = ChessCell.fromValue(array[x, y])
-    //operator fun set(x: Int, y: Int, value: ChessCell) { array[x, y] = value }
-
-    operator fun get(p: PointInt): ChessCell = this[p.x, p.y]
-    //operator fun set(p: PointInt, value: ChessCell) { this[p.x, p.y] = value }
 
     override fun toString(): String {
-        return (0 until array.height).joinToString("\n") { y ->
-            (0 until array.width).joinToString("") { x ->
-                array[x, y].toString()
+        return (0 until this.height).joinToString("\n") { y ->
+            (0 until this.width).joinToString("") { x ->
+                this[x, y].toString()
             }
         }
     }
@@ -199,7 +213,7 @@ inline class ChessBoard(
             }
         }
             .filter { validMovementPosition(oldPos, it) }
-            .filter { if (acceptCheck) true else !withMovement(oldPos, it).isCheck(player) }
+            .filter { if (acceptCheck) true else !withMovement(oldPos, it).isCheck(player) && this[it].kind != ChessPieceKind.KING }
             .toSet()
 
     }

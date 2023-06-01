@@ -4,7 +4,7 @@ import kotlin.test.*
 class ChessBoardTest {
     @Test
     fun testEmptyBoard() {
-        val board = ChessBoard()
+        val board = ChessBoard.createEmpty()
         assertEquals(
             """
                 ........
@@ -22,10 +22,10 @@ class ChessBoardTest {
 
     @Test
     fun testSimpleBoard() {
-        val board = ChessBoard()
-        board.array[0, 0] = ChessCell.Piece(ChessPieceKind.BISHOP, ChessPlayer.BLACK)
-        board.array[1, 0] = ChessCell.Piece(ChessPieceKind.KNIGHT, ChessPlayer.WHITE)
-        board.array[7, 6] = ChessCell.Piece(ChessPieceKind.KING, ChessPlayer.BLACK)
+        val board = ChessBoard.createEmpty()
+            .withCell(PointInt(0, 0), ChessCell.Piece(ChessPieceKind.BISHOP, ChessPlayer.BLACK))
+            .withCell(PointInt(1, 0), ChessCell.Piece(ChessPieceKind.KNIGHT, ChessPlayer.WHITE))
+            .withCell(PointInt(7, 6), ChessCell.Piece(ChessPieceKind.KING, ChessPlayer.BLACK))
         assertEquals(
             """
                 Bk......
@@ -82,6 +82,15 @@ class ChessBoardTest {
                 rkbqnbkr
             """.trimIndent(),
             ChessBoard.createDefault().withMovement(PointInt(1, 1), PointInt(1, 2)).toString()
+        )
+    }
+
+    @Test
+    fun testFromString() {
+        val default = ChessBoard.createDefault()
+        assertEquals(
+            ChessBoard.createFromString(default.toString()).toString(),
+            default.toString()
         )
     }
 }
