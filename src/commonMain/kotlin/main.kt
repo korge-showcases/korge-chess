@@ -1,8 +1,6 @@
 import korlibs.image.bitmap.*
 import korlibs.image.color.*
 import korlibs.image.text.*
-import korlibs.io.async.*
-import korlibs.io.lang.*
 import korlibs.korge.*
 import korlibs.korge.input.*
 import korlibs.korge.scene.*
@@ -17,14 +15,15 @@ import korlibs.memory.*
 suspend fun main() = Korge(windowSize = Size(512, 512), backgroundColor = Colors["#2b2b2b"]) {
 	val sceneContainer = sceneContainer()
 
-	sceneContainer.changeTo({ MainMenuScene() })
+	//sceneContainer.changeTo({ MainMenuScene() })
+    sceneContainer.changeTo({ GameScene() })
 }
 
 class MainMenuScene : Scene() {
     override suspend fun SContainer.sceneMain() {
         uiVerticalStack(adjustSize = false) {
             uiButton("START GAME!").onClick {
-                sceneContainer.changeTo({ MyScene() })
+                sceneContainer.changeTo({ GameScene() })
             }
             uiButton("EXIT GAME!").onClick {
                 gameWindow.close()
@@ -33,7 +32,7 @@ class MainMenuScene : Scene() {
     }
 }
 
-class MyScene : PixelatedScene(128 * 8, 128 * 8, sceneSmoothing = true) {
+class GameScene : PixelatedScene(128 * 8, 128 * 8, sceneSmoothing = true) {
     @KeepOnReload
     var board: ChessBoard = ChessBoard.createDefault()
         set(value) {
