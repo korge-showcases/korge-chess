@@ -1,3 +1,4 @@
+import korlibs.math.geom.*
 import kotlin.test.*
 
 class ChessBoardTest {
@@ -54,6 +55,33 @@ class ChessBoardTest {
                 rkbqnbkr
             """.trimIndent(),
             ChessBoard.createDefault().toString()
+        )
+    }
+
+    @Test
+    fun testKnightMovements() {
+        val board = ChessBoard.createDefault()
+
+        assertEquals(
+            setOf(PointInt(0, 2), PointInt(2, 2)),
+            board.availableMovements(PointInt(1, 0))
+        )
+    }
+
+    @Test
+    fun testMovement() {
+        assertEquals(
+            """
+                RKBQNBKR
+                P.PPPPPP
+                .P......
+                ........
+                ........
+                ........
+                pppppppp
+                rkbqnbkr
+            """.trimIndent(),
+            ChessBoard.createDefault().withMovement(PointInt(1, 1), PointInt(1, 2)).toString()
         )
     }
 }
