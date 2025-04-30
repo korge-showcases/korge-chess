@@ -1,5 +1,6 @@
 /.gradle
 /.idea
+/.kotlin
 /build
 /modules
 /bundles
@@ -11,4 +12,5 @@ korge.keystore
 local.properties
 src/main/*
 .DS_Store
-
+/null.frame
+/null.socket
